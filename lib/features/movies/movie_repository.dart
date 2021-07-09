@@ -18,6 +18,8 @@ abstract class MoviesRepository {
   Future<Result<MovieDetails>> movieDetails(int movieId);
 
   ObservableStream<List<Movie>> moviesStream();
+
+  void dispose();
 }
 
 class NetworkMoviesRepository implements MoviesRepository {
@@ -59,5 +61,10 @@ class NetworkMoviesRepository implements MoviesRepository {
   @override
   ObservableStream<List<Movie>> moviesStream() {
     return _stream;
+  }
+
+  @override
+  void dispose() {
+    _controller.close();
   }
 }
