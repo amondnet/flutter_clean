@@ -21,13 +21,14 @@ void main() {
 
     when(() => networkHandler.isNetworkAvailable).thenReturn(true);
 
-    final stream = repo.moviesStream();
+    final stream = repo.moviesStream;
     final expectStream = expectLater(
         stream,
         emitsInOrder([
           [Movie(1, 'test')],
           [Movie(1, 'change')]
         ]));
+
     when(() => service.movies())
         .thenAnswer((_) async => [MovieEntity(1, 'test')]);
     final result1 = await repo.movies();

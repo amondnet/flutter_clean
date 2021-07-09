@@ -4,20 +4,19 @@ import 'package:async/async.dart';
 import 'package:clean/core/exception/failure.dart';
 import 'package:clean/core/network_handler.dart';
 import 'package:clean/features/movies/movie_details_entity.dart';
-import 'package:mobx/mobx.dart';
 
+import '../../core/result.dart';
 import 'movie.dart';
 import 'movie_details.dart';
 import 'movie_entity.dart';
 import 'movies_service.dart';
-import '../../core/result.dart';
 
 abstract class MoviesRepository {
   Future<Result<List<Movie>>> movies();
 
   Future<Result<MovieDetails>> movieDetails(int movieId);
 
-  ObservableStream<List<Movie>> moviesStream();
+  Stream<List<Movie>> get moviesStream;
 
   void dispose();
 }
@@ -27,8 +26,7 @@ class NetworkMoviesRepository implements MoviesRepository {
   final MoviesService _service;
 
   final StreamController<List<Movie>> _controller = StreamController();
-  late ObservableStream<List<Movie>> _stream =
-      ObservableStream(_controller.stream);
+  late Stream<List<Movie>> _stream = _controller.stream.asBroadcastStream();
 
   NetworkMoviesRepository(this._networkHandler, this._service);
 
@@ -59,9 +57,7 @@ class NetworkMoviesRepository implements MoviesRepository {
   }
 
   @override
-  ObservableStream<List<Movie>> moviesStream() {
-    return _stream;
-  }
+  Stream<List<Movie>> get moviesStream => _stream;
 
   @override
   void dispose() {
