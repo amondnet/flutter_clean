@@ -6,9 +6,16 @@ import 'movie_entity.dart';
 
 class MoviesService {
   final _client = Client();
+
   Future<List<MovieEntity>> movies() async {
-    return [];
+    return [
+      MovieEntity(1, 'test'),
+      MovieEntity(2, 'test'),
+    ];
   }
 
-  Future<MovieDetailsEntity> movieDetails() {}
+  Future<MovieDetailsEntity> movieDetails() async {
+    return MovieDetailsEntity(
+        1, 'title', 'poster', 'summary', 'cast', 'director', 2020, 'trailer');
+  }
 }
