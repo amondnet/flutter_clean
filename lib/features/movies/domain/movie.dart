@@ -1,6 +1,7 @@
 import 'package:clean/features/movies/movie_details.dart';
 import 'package:equatable/equatable.dart';
 
+/// Domain Entity
 class Movie extends Equatable {
   final int id;
   final String poster;
@@ -9,5 +10,4 @@ class Movie extends Equatable {
 
   @override
   List<Object> get props => [id, poster];
-
 }
