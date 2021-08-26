@@ -7,5 +7,10 @@ import 'package:flutter/foundation.dart';
 abstract class UseCase<Type, Params> {
   Future<Result<Type>> call(Params params);
 }
+
 @immutable
 class None {}
+
+abstract class StreamUseCase<Type, Params> {
+  Stream<Type> call(Params params);
+}

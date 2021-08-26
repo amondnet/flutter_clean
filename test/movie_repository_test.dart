@@ -1,7 +1,7 @@
 import 'package:async/async.dart';
 import 'package:clean/core/network_handler.dart';
-import 'package:clean/features/movies/movie.dart';
-import 'package:clean/features/movies/movie_entity.dart';
+import 'package:clean/features/movies/domain/movie.dart';
+import 'package:clean/features/movies/data/movie_entity.dart';
 import 'package:clean/features/movies/movie_repository.dart';
 import 'package:clean/features/movies/movies_service.dart';
 import 'package:flutter_test/flutter_test.dart';

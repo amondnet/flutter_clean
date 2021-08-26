@@ -3,20 +3,24 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:clean/core/exception/failure.dart';
 import 'package:clean/core/network_handler.dart';
+import 'package:clean/core/network_response.dart';
+import 'package:clean/core/repository/network_bound_resource_stream.dart';
+import 'package:clean/core/resource.dart';
 import 'package:clean/features/movies/movie_details_entity.dart';
+import 'package:mobx/mobx.dart';
 
 import '../../core/result.dart';
-import 'movie.dart';
+import 'data/movie_entity.dart';
+import 'domain/movie.dart';
 import 'movie_details.dart';
-import 'movie_entity.dart';
 import 'movies_service.dart';
 
 abstract class MoviesRepository {
   Future<Result<List<Movie>>> movies();
 
-  Future<Result<MovieDetails>> movieDetails(int movieId);
+  Stream<Resource<List<Movie>>> moviesStream();
 
-  Stream<List<Movie>> get moviesStream;
+  Future<Result<MovieDetails>> movieDetails(int movieId);
 
   void dispose();
 }
@@ -57,10 +61,36 @@ class NetworkMoviesRepository implements MoviesRepository {
   }
 
   @override
-  Stream<List<Movie>> get moviesStream => _stream;
-
-  @override
   void dispose() {
     _controller.close();
+  }
+
+  @override
+  Stream<Resource<List<Movie>>> moviesStream() =>
+      NetworkBoundMovie(_service).stream;
+}
+
+class NetworkBoundMovie
+    extends NetworkBoundResourceStream<List<Movie>, List<MovieEntity>> {
+  final MoviesService _service;
+  List<Movie> _cache = [];
+
+  NetworkBoundMovie(this._service);
+
+  @override
+  Stream<ApiResponse<List<MovieEntity>>> createCall() =>
+      _service.moviesStream();
+
+  @override
+  Stream<List<Movie>> loadFromDb() => Stream.value(_cache);
+
+  @override
+  void saveCallResult(List<MovieEntity> item) {
+    _cache = item.map((e) => e.toMovie()).toList();
+  }
+
+  @override
+  bool shouldFetch(List<Movie>? data) {
+    return false;
   }
 }

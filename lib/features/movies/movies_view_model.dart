@@ -1,10 +1,12 @@
+import 'package:async/async.dart';
 import 'package:clean/core/base_view_model.dart';
+import 'package:clean/core/resource.dart';
 import 'package:clean/features/movies/get_movies.dart';
 import 'package:mobx/mobx.dart';
 
-import 'movie.dart';
-import 'movie_view.dart';
 import '../../core/result.dart';
+import 'domain/movie.dart';
+import 'movie_view.dart';
 
 part 'movies_view_model.g.dart';
 
@@ -12,21 +14,20 @@ class MoviesViewModel = MoviesViewModelBase with _$MoviesViewModel;
 
 abstract class MoviesViewModelBase extends BaseViewModel with Store {
   @observable
-  ObservableFuture<List<MovieView>>? movies;
+  List<MovieView> movies = ObservableList();
 
-  final GetMovies getMovies;
+  final GetMoviesStream getMovies;
 
   MoviesViewModelBase(this.getMovies);
 
   @action
-  Future<List<MovieView>> loadMovies() {
-    return movies = ObservableFuture(getMovies.call().then((value) =>
-        value.isValue
-            ? handleMovieList(value.asValue!.value)
-            : throw handleFailure(value.failure)));
-  }
-
-  List<MovieView> handleMovieList(List<Movie> movies) {
-    return movies.map((it) => MovieView(it.id, it.poster)).toList();
+  void loadMovies() {
+    getMovies().listen((resource) {
+      resource.when(
+          (data) => movies =
+              ObservableList.of(data.map((e) => MovieView(e.id, e.poster))),
+          error: (msg, data) {},
+          loading: (data) {});
+    });
   }
 }
